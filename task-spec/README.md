@@ -3,7 +3,9 @@
 *A compact evaluation task in the format this Fellowship uses: specification,
 pinned baseline, reference solution, automated verifier. Built from my own
 optimization work ([note 1](../notes/01-vulkan-prefill-lds-bank-conflict.md)).
-Status: baseline and reference measured; verifier script in progress.*
+Status: baseline and reference measured; automated verifier included
+([`verify.sh`](verify.sh) + [`baseline.json`](baseline.json)); baseline values
+are being re-measured with the stated methodology before final publication.*
 
 ## 1. Specification
 
