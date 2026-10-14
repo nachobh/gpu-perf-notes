@@ -24,9 +24,10 @@ repeating them.
    against an independent oracle build (and two upstream bugs found on the
    way); FP4 vs a strong K-quant honestly measured (12% smaller, +7% batch-1,
    PPL gap "small but probably real" with overlapping error bars); and how
-   FP4 batched speculative decoding went from a 25% deficit to a 46% lead —
-   per-weight scale lookups amortized, a branch-free dequant path, and a
-   mixed-type `output.weight` tensor costing 22 ms/step found and fixed.
+   FP4 batched speculative decoding went from a 25% deficit to a 10% lead on
+   prose (and +24%/+48% on HTML/digit workloads) — per-weight scale lookups
+   amortized, a branch-free dequant path, and a mixed-type `output.weight`
+   tensor costing 22 ms/step found and fixed.
 
 ## Method (applies to every note)
 
@@ -44,7 +45,31 @@ repeating them.
 
 [`task-spec/`](task-spec/README.md) — a compact evaluation task built from
 note 1: specification, pinned baseline, reference solution, and an automated
-verifier with held-out shapes and anti-gaming checks.
+verifier ([`verify.sh`](task-spec/verify.sh)) with held-out shapes and
+anti-gaming checks. Baseline values are being re-measured with the stated
+methodology before final publication.
+
+## Verification: fork vs upstream (2026-10-14)
+
+Cross-check of the merged fork branch against a clean upstream build
+(`6868a52c`), same machine, interleaved arms, first round discarded
+(boost clock), Qwen3.5-9B MTP Q4_K_M (a GDN-hybrid model — deliberately
+*not* the model the wins were found on):
+
+| arm | base (upstream) | fork |
+|---|---|---|
+| pp512 / pp2048 (llama-bench, t/s) | 1020 / 1008 | 1036 / 1011 |
+| tg128 (t/s) | 31.7 | 31.5 |
+| MTP spec n-max 4, prose generation (t/s) | 36.8 / 38.4 | 38.8 / 34.4 |
+| adaptive draft n∈[3,7] (t/s, median of 3) | — (feature absent upstream) | 35.2 |
+
+Honest reading: **no regression from the merge** (pp/tg within noise); MTP
+gives ~+19% on both builds; on this model the adaptive controller matches the
+tuned fixed setting without tuning (n=4 is already near-optimal here — its
+documented +48% win is on a model whose recommended fixed setting is wrong,
+see note 1 §2b). The +14% prefill win is matmul-bound-model-specific and does
+not transfer to this GDN hybrid, as note 1 predicts for non-matmul-bound
+workloads.
 
 ## Related repos
 

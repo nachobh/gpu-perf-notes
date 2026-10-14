@@ -11,7 +11,8 @@ are being re-measured with the stated methodology before final publication.*
 
 - **Workload.** llama.cpp Vulkan backend, `mul_mm.comp` cooperative-matrix path,
   `MUL_MAT` shapes: primary m=4096 n=512 k=14336 (`q4_0_rocmfp4_fast`), plus two
-  held-out shapes revealed only to the verifier.
+  held-out shapes — m=1024 n=512 k=14336 and m=4096 n=2048 k=5120 — scored by the
+  verifier and absent from the task repo.
 - **Hardware.** AMD Radeon 8060S (gfx1151), RADV / Mesa, Vulkan coopmat1.
 - **Starting code.** Clean upstream build at a pinned commit; shader default
   `SHMEM_STRIDE_PAD = 4` (a silent four-way LDS bank conflict on every

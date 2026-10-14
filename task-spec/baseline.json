@@ -1,5 +1,6 @@
 {
-  "_comment": "Baseline TFLOPS per shape, measured on Radeon 8060S (gfx1151), upstream commit 95b8e33e1 build, SHMEM_STRIDE_PAD=4 default. RE-MEASURE before publishing: values below are from the PAD sweep table (stride 20 row) and must be regenerated with the same methodology as verify.sh (discard run 1, median of 6).",
+  "_comment": "Baseline TFLOPS per shape, measured on Radeon 8060S (gfx1151), upstream commit 95b8e33e1 build, SHMEM_STRIDE_PAD=4 default. RE-MEASURE before publishing: the primary value below is from the PAD sweep table (stride 20 row); held-out values are not yet measured. Regenerate all with verify.sh methodology (discard run 1, median of 6).",
   "_primary": "4096,512,14336",
+  "_held_out": ["1024,512,14336", "4096,2048,5120"],
   "4096,512,14336": 13.2
 }
