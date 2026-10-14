@@ -48,9 +48,11 @@ verifier with held-out shapes and anti-gaming checks.
 
 ## Related repos
 
-- **[llama.cpp fork](https://github.com/nachobh/llama.cpp)** — the code behind
-  these notes (ROCmFPx port, Vulkan LDS fix, batched spec-decode fixes,
-  adaptive draft length, qwen4exp support).
+- **[llama.cpp fork, branch `perf-master-2026-10`](https://github.com/nachobh/llama.cpp/tree/perf-master-2026-10)** —
+  the code behind these notes (ROCmFPx port, Vulkan LDS fix, batched
+  spec-decode fixes, adaptive draft length, qwen4exp support), merged with
+  upstream master (zero commits behind, all fixes preserved, builds + tests
+  green).
 - **[consejo-de-sabios](https://github.com/nachobh/consejo-de-sabios)** —
   multi-model debate pipeline with quality-vs-latency benchmarks.
 - **[zimage-studio](https://github.com/nachobh/zimage-studio)** — local
