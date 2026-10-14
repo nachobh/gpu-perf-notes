@@ -45,3 +45,15 @@ repeating them.
 [`task-spec/`](task-spec/README.md) — a compact evaluation task built from
 note 1: specification, pinned baseline, reference solution, and an automated
 verifier with held-out shapes and anti-gaming checks.
+
+## Related repos
+
+- **[llama.cpp fork](https://github.com/nachobh/llama.cpp)** — the code behind
+  these notes (ROCmFPx port, Vulkan LDS fix, batched spec-decode fixes,
+  adaptive draft length, qwen4exp support).
+- **[consejo-de-sabios](https://github.com/nachobh/consejo-de-sabios)** —
+  multi-model debate pipeline with quality-vs-latency benchmarks.
+- **[zimage-studio](https://github.com/nachobh/zimage-studio)** — local
+  multimodal panel (diffusion + LoRA + TTS/STT + MCP).
+- **[gpt2-from-scratch-llama2c](https://github.com/nachobh/gpt2-from-scratch-llama2c)**
+  — GPT-2 trained from scratch with numerically verified GGUF export.
