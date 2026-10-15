@@ -162,7 +162,7 @@ Radeon 8060S, greedy, 300 generated tokens, t/s as prose / json:
 
 Adding `--spec-draft-n-min 3` as a floor removes the prose cost entirely on the
 worst arm and improves json further -- Qwen3.8 DFlash+FP4 goes from
-25.7 / 38.3 (best fixed) to **26.6 / 52.8**, i.e. +3.5% prose and +37.9% json.
+25.5 / 38.3 (best fixed) to **26.6 / 52.8**, i.e. +4.3% prose and +37.9% json.
 The floor stops the controller dipping on a transient run of rejections.
 **Recommended config: `--spec-draft-adaptive --spec-draft-n-min 3` with n_max
 left at whatever the model card says.**
@@ -176,7 +176,7 @@ recommends:
 | n=15 adaptive + n_min=3 | **19.3** | **21.5** |
 
 **+48% prose, +33% json** -- and it lands within noise of the best hand-tuned
-fixed setting (n=3 gives 19.7 / 21.7). Anyone following that model card today
+fixed setting (n=3 gives 19.9 / 21.6). Anyone following that model card today
 loses a third of their prose throughput with no way to know.
 
 **Structured output gains 16-32%; prose costs 0-7%.** MTP adaptive matches the
@@ -250,7 +250,10 @@ tile to raise occupancy made throughput *fall* monotonically (16 acc → 14.6 TF
 which is what pointed at LDS and, eventually, at §1.
 
 **wave32 subgroups.** Worth +2.8% prefill on its own (RDNA3 WMMA is wave32-native:
-48.8 TFLOPS at wave32 vs 38.1 at wave64). **Superseded and dropped** — pad+wave32
+48.8 TFLOPS at wave32 vs 38.1 at wave64 — the 48.8 here is the same f16 WMMA
+instruction roof quoted in §3, and the 38.1 is the same register-resident
+pure-WMMA microbenchmark reported in §6, run at wave64 rather than wave32).
+**Superseded and dropped** — pad+wave32
 measures 294 pp512 against 315 for pad alone. Its gain was partly working around
 the LDS inefficiency; once the stride is fixed, its register spilling dominates.
 
@@ -299,7 +302,7 @@ not), all boost-discarded:
 
 | configuration | TFLOPS | share of runtime |
 |---|---|---|
-| baseline | 15.3 | — |
+| baseline | 15.4 | — |
 | − A staging (global read + dequant + LDS write) | 18.3 | A staging ~17% |
 | − A *and* B staging | 22.5 | B staging ~16% |
 | pure WMMA, fragments resident in registers | 38.1 | inner loop ~28%, WMMA ~40% |
@@ -324,7 +327,7 @@ here, and §1 already measured that bank conflict wins by 16%.
 
 **Double buffering.** Would hide the ~33% staging behind the ~40% compute, but it
 doubles staging LDS (25.6 -> ~46 KB) and forces 1 workgroup/CU instead of 2.
-Measured that regime directly by padding LDS to 33792 bytes: **15.3 -> 10.7
+Measured that regime directly by padding LDS to 33792 bytes: **15.4 -> 10.7
 TFLOPS, a 30% loss.** It would cost more than it could recover. Two resident
 workgroups already supply the pipelining, without paying the LDS.
 

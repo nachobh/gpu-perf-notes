@@ -38,8 +38,9 @@ repeating them.
   (`test-backend-ops` full sweeps), PPL with error bars.
 - Combined vs isolated gains always separated (quantization ≠ spec-decode ≠
   layout fix).
-- Third-party reference numbers (e.g. kingjones777's published results on
-  identical hardware) are labeled as such, never blended into my own tables.
+- Third-party reference numbers (e.g. community reports and model cards for
+  ROCmFPx GGUFs on identical hardware) are labeled as such, never blended into
+  my own tables.
 
 ## Task spec
 
@@ -63,9 +64,10 @@ Cross-check of the merged fork branch against a clean upstream build
 | MTP spec n-max 4, prose generation (t/s) | 36.8 / 38.4 | 38.8 / 34.4 |
 | adaptive draft n∈[3,7] (t/s, median of 3) | — (feature absent upstream) | 35.2 |
 
-Honest reading: **no regression from the merge** (pp/tg within noise); MTP
-gives ~+19% on both builds; on this model the adaptive controller matches the
-tuned fixed setting without tuning (n=4 is already near-optimal here — its
+Honest reading: **no regression from the merge** (pp/tg within noise); MTP gives
++4.3% on the upstream build (36.8 → 38.4) but −11.3% on the fork build
+(38.8 → 34.4) — the two arms disagree on this model; the adaptive controller
+matches the tuned fixed setting without tuning (n=4 is already near-optimal here — its
 documented +48% win is on a model whose recommended fixed setting is wrong,
 see note 1 §2b). The +14% prefill win is matmul-bound-model-specific and does
 not transfer to this GDN hybrid, as note 1 predicts for non-matmul-bound

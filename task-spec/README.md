@@ -39,8 +39,7 @@ are being re-measured with the stated methodology before final publication.*
 
 ## 2. Baseline
 
-- Pinned upstream commit + exact CMake flags + build command. *(fill commit hash
-  at publish time)*
+- Pinned upstream commit `95b8e33e1` + exact CMake flags + build command.
 - Re-run PAD sweep 0–8 with the stated methodology:
 
 | PAD | stride | gcd(stride,32) | TFLOPS |
@@ -70,14 +69,23 @@ interleaved runs, idle GPU. The two numbers are reported separately on purpose.
 ## 4. Verifier (automated)
 
 `verify.sh`: build → `test-backend-ops` (per-dtype tolerances) → paired benchmark
-(N=7 synchronized runs, discard run 1, median) → compare against pinned baseline
-JSON → exit code.
+of the primary and both held-out shapes (N=7 synchronized runs, discard run 1,
+median per shape) → compare against the pinned baseline JSON (primary must beat
+it by ≥12%, held-out shapes must not regress by >2%) → exit code.
 
-Anti-gaming checks:
-- Shader checksum outside the tunable → fail.
-- Dispatch/kernel logs must show the coopmat kernel ran for the scored shapes.
-- Held-out shapes injected by the verifier, absent from the task repo.
-- Baseline re-measured in the same session (paired ratios, not absolute numbers).
+Automated checks:
+- Correctness sweep and paired perf comparison above; the scored primary shape
+  is pinned by key in the baseline JSON, not inferred.
+- Held-out shapes are benchmarked by the verifier itself (all three shapes are
+  grepped from the perf sweep), so a candidate cannot skip them.
+
+Reviewer checks (declared, not automated by `verify.sh`):
+- Shader checksum outside the tunable → fail (`git diff --stat` vs the pinned
+  commit, restricted to the allowed file).
+- Dispatch/kernel logs must show the coopmat kernel ran for the scored shapes
+  (`RADV_DEBUG=shaderstats:nocache`).
+- Baseline re-measured in the same session for paired ratios (the script
+  compares against the pinned file; re-measurement is a reviewer step).
 
 ## 5. Known limitations (declared)
 

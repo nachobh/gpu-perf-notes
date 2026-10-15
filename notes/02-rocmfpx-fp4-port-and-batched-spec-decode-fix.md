@@ -270,8 +270,9 @@ Still open on the perf side:
   3, and whether the HTML and digit gaps are FP4 winning or the K-quant preset being
   mis-tuned at 7. Use a fixed prompt with a fixed token count and run both settings
   back to back; every number on record came from a separate interactive session.
-- fp6/fp3 float mat-vec is fixed but still ~1.5x `q6_K`/`q3_K` at n=1 (226 vs 211,
-  275 vs 109). fp3 in particular still pays a shared-LUT codebook lookup per weight.
+- fp6/fp3 float mat-vec is fixed but still ~1.07x `q6_K` at n=1 (226 vs 211)
+  and ~2.5x `q3_K` (275 vs 109). fp3 in particular still pays a shared-LUT
+  codebook lookup per weight.
   Low priority: no model here leans on fp3.
 - The same `K_PER_ITER` amortisation probably helps `Q8_0_ROCMFPX` and the upstream
   `mxfp4` / legacy types, which still decode their scale once per 8 weights. mxfp4
@@ -283,8 +284,8 @@ Still open on the perf side:
 5. `Q3_0_ROCMFPX` / `Q6_0_ROCMFPX` integer-dot paths. fp3 needs a bit-window gather
    that does not fit the current `cache_b` layout; the fork's fp6 int path assumes
    the broken unpacked layout this tree fixes, so it must be written fresh. Less
-   urgent than it was — the float path for both is now within ~1.5x of the matching
-   K-quant instead of 5x.
+   urgent than it was — the float path for fp6 is now within ~1.07x of the matching
+   K-quant (fp3 at ~2.5x, see above) instead of 5x.
 6. `Q2_0_ROCMFPX` has no Vulkan kernels at all (CPU only).
 7. HIP/CUDA and OpenCL kernels not ported. The HIP sources ship in `ggml/rocmfp4/`
    and `ggml/rocmfpx/` but are not built.
