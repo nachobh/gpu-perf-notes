@@ -61,12 +61,14 @@ Cross-check of the merged fork branch against a clean upstream build
 |---|---|---|
 | pp512 / pp2048 (llama-bench, t/s) | 1020 / 1008 | 1036 / 1011 |
 | tg128 (t/s) | 31.7 | 31.5 |
-| MTP spec n-max 4, prose generation (t/s) | 36.8 / 38.4 | 38.8 / 34.4 |
+| prose gen, no spec (t/s, mean of 4 runs) | 30.3 | 31.1 |
+| prose gen, MTP spec n-max 4 (t/s, mean of 4 runs) | 34.6 | 37.3 |
 | adaptive draft n∈[3,7] (t/s, median of 3) | — (feature absent upstream) | 35.2 |
 
 Honest reading: **no regression from the merge** (pp/tg within noise); MTP gives
-+4.3% on the upstream build (36.8 → 38.4) but −11.3% on the fork build
-(38.8 → 34.4) — the two arms disagree on this model; the adaptive controller
++14% on the upstream build (30.3 → 34.6) and +20% on the fork build
+(31.1 → 37.3) — MTP runs are high-variance (base ranged 31.0–38.4 across
+repeats), so treat the means as ±3; the adaptive controller
 matches the tuned fixed setting without tuning (n=4 is already near-optimal here — its
 documented +48% win is on a model whose recommended fixed setting is wrong,
 see note 1 §2b). The +14% prefill win is matmul-bound-model-specific and does
