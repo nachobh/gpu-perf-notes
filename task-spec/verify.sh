@@ -35,6 +35,7 @@ echo "== 1. correctness (MUL_MAT full sweep) =="
 CORRECT=$("$BIN/test-backend-ops" -o MUL_MAT 2>&1 | grep -c 'result = ok' || true)
 TOTAL=$("$BIN/test-backend-ops" -o MUL_MAT 2>&1 | grep -c 'result =' || true)
 echo "correctness: $CORRECT/$TOTAL ok"
+[ "$TOTAL" -gt 0 ] || { echo "FAIL: no MUL_MAT results parsed (parser or binary broken)"; exit 1; }
 [ "$CORRECT" = "$TOTAL" ] || { echo "FAIL: correctness"; exit 1; }
 
 echo "== 2. performance (paired, first run discarded, median of $((N-1))) =="
@@ -45,30 +46,38 @@ run_perf() { # runs perf sweep, prints TFLOPS lines for primary + held-out shape
 run_perf > /dev/null
 for i in $(seq 2 $N); do run_perf; done > perf_runs.txt
 # median per shape via python
-TOL_PERF="$TOL_PERF" TOL_REGRESS="$TOL_REGRESS" python3 - "$BASELINE_JSON" <<'EOF'
+TOL_PERF="$TOL_PERF" TOL_REGRESS="$TOL_REGRESS" N_OBS="$((N-1))" python3 - "$BASELINE_JSON" <<'EOF'
 import os, re, statistics, sys, json
 runs = {}
 for line in open('perf_runs.txt'):
-    m = re.search(r'shape=\(([^)]+)\).*?([0-9.]+)\s*GFLOPS', line) or \
-      re.search(r'shape=\(([^)]+)\).*?([0-9.]+)\s*TFLOPS', line)
+    m = re.search(r'shape=\(([^)]+)\).*?([0-9.]+)\s*(GFLOPS|TFLOPS)', line)
     if m:
-        runs.setdefault(m.group(1), []).append(float(m.group(2)))
+        val = float(m.group(2))
+        if m.group(3) == 'GFLOPS':
+            val /= 1000.0  # normalize to TFLOPS (baseline units)
+        runs.setdefault(m.group(1).replace(' ', ''), []).append(val)
 med = {k: statistics.median(v) for k, v in runs.items()}
 base = json.load(open(sys.argv[1]))
 tol_perf = float(os.environ.get('TOL_PERF', 0.12))
 tol_regress = float(os.environ.get('TOL_REGRESS', 0.02))
-print("medians:", med)
+n_obs = int(os.environ.get('N_OBS', '6'))
+print("medians (TFLOPS):", med)
 primary = base.get('_primary') or max(med, key=lambda k: med[k])  # pinned key from baseline.json; fallback fastest
+held_out = base.get('_held_out', [])
 ok = True
+# every declared shape must actually be benchmarked, with enough observations
+for shape in [primary] + list(held_out):
+    if shape not in med:
+        print(f"FAIL: declared shape {shape} not benchmarked"); ok = False
+    elif len(runs[shape]) < n_obs:
+        print(f"FAIL: shape {shape} has {len(runs[shape])} observations, need {n_obs}"); ok = False
 for shape, v in med.items():
-    if shape in base:
+    if shape in base and not shape.startswith('_'):
         ratio = v / base[shape]
         if shape == primary and ratio < 1 + tol_perf:
             print(f"FAIL: primary {shape} speedup {ratio:.3f} < {1 + tol_perf:.2f}"); ok = False
         if shape != primary and ratio < 1 - tol_regress:
             print(f"FAIL: held-out {shape} regressed {ratio:.3f}"); ok = False
-if primary not in med:
-    print(f"FAIL: primary shape {primary} not benchmarked"); ok = False
 sys.exit(0 if ok else 1)
 EOF
 PERF_RC=$?
