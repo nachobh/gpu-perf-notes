@@ -357,6 +357,15 @@ Head bounds come from its own KV and the quantized bytes are copied through unto
 so there is no dequantize, no requantize and no quality change. Handles split inputs
 and writes one unsplit file.
 
+**Known limitation (verified 2026-10-17 against `perf-master-2026-10` and
+`qwen4exp-rocm10-rocmfpx-vulkan`):** the per-head loader/graph path described above
+is not implemented in these branches — `qwen4exp.cpp` still requires the joined
+`per_layer_token_embd.weight` and nothing consumes `LLM_TENSOR_PLE_NGRAM_EMBD`
+outside the arch name table. Split files are therefore a storage/exchange format
+here, not loadable substitutes; feed an unsplit file for inference until the
+loader path lands (the script auto-detects direction: a split input is written
+back out as one unsplit file).
+
 ### Measurements (Radeon 8060S, 96 GiB VRAM carve-out, 30 GB host)
 
 Qwen3.8-Flash-Next, experts `Q4_0_ROCMFP4_FAST` 4.25 bpw, n-gram table

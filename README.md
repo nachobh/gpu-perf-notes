@@ -78,10 +78,14 @@ workloads.
 ## Related repos
 
 - **[llama.cpp fork, branch `perf-master-2026-10`](https://github.com/nachobh/llama.cpp/tree/perf-master-2026-10)** —
-  the code behind these notes (ROCmFPx port, Vulkan LDS fix, batched
+  the merged dev branch (ROCmFPx formats with CPU+Vulkan kernels, batched
   spec-decode fixes, adaptive draft length, qwen4exp support), merged with
-  upstream master (zero commits behind, all fixes preserved, builds + tests
-  green).
+  upstream master (0 behind). Two honest scope notes: the driver-gated
+  LDS stride-pad fix behind the +14% prefill number lives on
+  [`qwen4exp-rocm10-rocmfpx-vulkan`](https://github.com/nachobh/llama.cpp/tree/qwen4exp-rocm10-rocmfpx-vulkan)
+  (commit `2e86d05dd`) and is being re-ported here; and on HIP the FP4 formats
+  are registered with standalone dequant helpers but full backend op
+  integration is still open (see `ggml/rocmfpx/README.md`).
 - **[consejo-de-sabios](https://github.com/nachobh/consejo-de-sabios)** —
   multi-model debate pipeline with quality-vs-latency benchmarks.
 - **[zimage-studio](https://github.com/nachobh/zimage-studio)** — local
