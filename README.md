@@ -81,9 +81,10 @@ workloads.
   the merged dev branch (ROCmFPx formats with CPU+Vulkan kernels, batched
   spec-decode fixes, adaptive draft length, qwen4exp support), merged with
   upstream master (0 behind). Two honest scope notes: the driver-gated
-  LDS stride-pad fix behind the +14% prefill number lives on
-  [`qwen4exp-rocm10-rocmfpx-vulkan`](https://github.com/nachobh/llama.cpp/tree/qwen4exp-rocm10-rocmfpx-vulkan)
-  (commit `2e86d05dd`) and is being re-ported here; and on HIP the FP4 formats
+  LDS stride-pad fix behind the +14% prefill number (commit `2e86d05dd` on
+  [`qwen4exp-rocm10-rocmfpx-vulkan`](https://github.com/nachobh/llama.cpp/tree/qwen4exp-rocm10-rocmfpx-vulkan))
+  has been re-ported onto this branch (`1600cf85c`, MUL_MAT 2415/2415 green on
+  Vulkan0; the paired pp512 re-measurement is still pending); and on HIP the FP4 formats
   are registered with standalone dequant helpers but full backend op
   integration is still open (see `ggml/rocmfpx/README.md`).
 - **[consejo-de-sabios](https://github.com/nachobh/consejo-de-sabios)** —
